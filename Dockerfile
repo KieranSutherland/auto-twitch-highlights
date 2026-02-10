@@ -1,6 +1,10 @@
 FROM python:3.11-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    WHISPER_DEVICE=cuda
 
 # System deps
 RUN apt-get update && apt-get install -y \
@@ -9,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     ca-certificates \
     libicu-dev \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install yt-dlp
@@ -25,7 +30,14 @@ RUN wget -O /tmp/twitch.zip \
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+# GPU-enabled PyTorch build for Whisper (CUDA 12.1 wheels).
+RUN pip install --index-url https://download.pytorch.org/whl/cu121 \
+    torch==2.5.1 \
+    torchvision==0.20.1 \
+    torchaudio==2.5.1
+
+RUN pip install -r requirements.txt
 
 COPY . .
 

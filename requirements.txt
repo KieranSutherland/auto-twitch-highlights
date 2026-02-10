@@ -6,3 +6,4 @@ pydub
 librosa
 openai-whisper
 scipy
+opencv-python-headless
