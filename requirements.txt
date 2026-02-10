@@ -1,0 +1,8 @@
+numpy
+pandas
+tqdm
+ffmpeg-python
+pydub
+librosa
+openai-whisper
+scipy
